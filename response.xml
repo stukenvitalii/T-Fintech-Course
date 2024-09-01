@@ -1,1 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><city slug="spb"><coords lat="59.939095" lon="30.315868"/></city>
+<City>
+    <slug>spb</slug>
+    <coords>
+        <lat>59.939095</lat>
+        <lon>30.315868</lon>
+    </coords>
+</City>

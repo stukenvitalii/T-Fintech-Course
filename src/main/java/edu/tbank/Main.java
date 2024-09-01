@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tbank.dto.City;
 import edu.tbank.parser.XmlParser;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -24,7 +22,7 @@ public class Main {
 
             XmlParser.convertStringToXMLFile(city);
             logger.info("XML file (response.xml) successfully created");
-        } catch (IOException | ParserConfigurationException | TransformerException e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
     }
