@@ -3,29 +3,27 @@ package edu.tbank;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tbank.dto.City;
 import edu.tbank.parser.XmlParser;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        File file = new File("city.json");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
+            File file = new File("src/main/resources/city.json");
+            log.debug("File successfully opened");
+
+            ObjectMapper objectMapper = new ObjectMapper();
             City city = objectMapper.readValue(file, City.class);
+            log.debug("Object successfully read from file");
 
             XmlParser.convertStringToXMLFile(city);
-            logger.info("XML file (response.xml) successfully created");
+            log.info("XML file (response.xml) successfully created");
         } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
-
-
 }
