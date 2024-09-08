@@ -1,6 +1,7 @@
 package edu.tbank.hw3;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
     private Node<T> head;
@@ -95,5 +96,23 @@ public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
         for (T t : list) {
             add(t);
         }
+    }
+
+    public void addAll(CustomLinkedListImpl<T> list) {
+        Node<T> current = list.head;
+        while (current != null) {
+            add(current.getData());
+            current = current.getNext();
+        }
+    }
+
+    public static <T> CustomLinkedListImpl<T> toCustomLinkedList(Stream<T> stream) {
+        return stream.reduce(new CustomLinkedListImpl<>(), (list, element) -> {
+            list.add(element);
+            return list;
+        }, (list1, list2) -> {
+            list1.addAll(list2);
+            return list1;
+        });
     }
 }
