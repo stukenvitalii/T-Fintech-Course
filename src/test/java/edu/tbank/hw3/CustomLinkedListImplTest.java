@@ -3,6 +3,7 @@ package edu.tbank.hw3;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,6 +85,23 @@ class CustomLinkedListImplTest {
         assertEquals(3, list.size());
         assertEquals(1, list.get(0));
         assertEquals(2, list.get(1));
+        assertEquals(3, list.get(2));
+    }
+
+    @Test
+    void convertEmptyStreamToCustomLinkedList() {
+        Stream<Integer> stream = Stream.empty();
+        CustomLinkedListImpl<Integer> list = CustomLinkedListImpl.toCustomLinkedList(stream);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void convertStreamWithNullElementsToCustomLinkedList() {
+        Stream<Integer> stream = Stream.of(1, null, 3);
+        CustomLinkedListImpl<Integer> list = CustomLinkedListImpl.toCustomLinkedList(stream);
+        assertEquals(3, list.size());
+        assertEquals(1, list.get(0));
+        assertNull(list.get(1));
         assertEquals(3, list.get(2));
     }
 }
