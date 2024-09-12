@@ -1,7 +1,7 @@
-package edu.tbank.parser;
+package edu.tbank.hw2.parser;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import edu.tbank.dto.City;
+import edu.tbank.hw2.dto.City;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

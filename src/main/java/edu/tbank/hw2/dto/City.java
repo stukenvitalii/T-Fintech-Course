@@ -1,4 +1,4 @@
-package edu.tbank.dto;
+package edu.tbank.hw2.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
