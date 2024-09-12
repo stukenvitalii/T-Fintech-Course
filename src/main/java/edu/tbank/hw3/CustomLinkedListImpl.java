@@ -1,5 +1,9 @@
 package edu.tbank.hw3;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -114,5 +118,13 @@ public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
             list1.addAll(list2);
             return list1;
         });
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    private static class Node<T> {
+        private T data;
+        private Node<T> next;
     }
 }
