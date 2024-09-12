@@ -9,8 +9,4 @@ public interface CustomLinkedList<T> {
     int size();
     boolean contains(T t);
     void addAll(List<T> list);
-
-    private boolean isEmpty() {
-        return false;
-    }
 }
