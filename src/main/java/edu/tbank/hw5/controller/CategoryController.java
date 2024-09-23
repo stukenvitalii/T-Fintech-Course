@@ -4,12 +4,14 @@ import edu.tbank.hw5.dto.Category;
 import edu.tbank.hw5.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.tinkoff.measurementloggingstarter.annotation.EnableTimeMeasurementLogging;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/place-categories")
+@EnableTimeMeasurementLogging
 public class CategoryController {
     private final CategoryService categoryService;
 
