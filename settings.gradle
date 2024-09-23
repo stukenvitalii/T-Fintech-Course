@@ -1,1 +1,2 @@
 rootProject.name = 'T-Fintech-Course'
+include ':measurement-logging-starter'
