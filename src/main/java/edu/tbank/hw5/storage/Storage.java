@@ -24,10 +24,6 @@ public class Storage<K, V> {
         storage.remove(key);
     }
 
-    public boolean containsKey(K key) {
-        return storage.containsKey(key);
-    }
-
     public int size() {
         return storage.size();
     }
