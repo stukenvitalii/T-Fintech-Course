@@ -2,6 +2,7 @@ package edu.tbank.hw5.repository;
 
 import edu.tbank.hw5.dto.Category;
 import edu.tbank.hw5.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +10,9 @@ import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class CategoryRepository {
-    private final Storage<Long, Category> storage = new Storage<>();
+    private final Storage<Long, Category> storage;
 
     public List<Category> findAll() {
         log.info("Fetching all categories");

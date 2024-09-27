@@ -2,6 +2,7 @@ package edu.tbank.hw5.repository;
 
 import edu.tbank.hw5.dto.Location;
 import edu.tbank.hw5.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +10,9 @@ import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class LocationRepository {
-    private final Storage<String, Location> storage = new Storage<>();
+    private final Storage<String, Location> storage;
 
     public List<Location> findAll() {
         log.info("Fetching all locations");
