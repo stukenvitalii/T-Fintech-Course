@@ -30,7 +30,7 @@ public class DataLoader implements CommandLineRunner {
         log.info("Finished data loading process");
     }
 
-    private void retrieveCategories() {
+    void retrieveCategories() {
         List<Category> categories = kudaGoClient.getAllCategories();
 
         if (categories != null) {
@@ -41,7 +41,7 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
-    private void retrieveLocations() {
+    void retrieveLocations() {
         List<Location> locations = kudaGoClient.getAllLocations();
         if (locations != null) {
             log.info("Fetched {} locations from API", locations.size());
