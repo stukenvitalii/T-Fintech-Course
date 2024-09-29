@@ -4,14 +4,14 @@ import edu.tbank.hw5.dto.Location;
 import edu.tbank.hw5.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.tinkoff.measurementloggingstarter.annotation.EnableTimeMeasurementLogging;
+import org.tinkoff.measurementloggingstarter.annotation.Timed;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/locations")
-@EnableTimeMeasurementLogging
+@Timed
 public class LocationController {
     private final LocationService locationService;
 
