@@ -10,14 +10,6 @@ public class ClientConfiguration {
     @Value("${app.kuda-go-url}")
     private String kudaGoBaseUrl;
 
-//    @Bean
-//    public RestTemplate restTemplate() {
-//        RestTemplate restTemplate = new RestTemplate();
-//        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(kudaGoBaseUrl));
-//
-//        return restTemplate;
-//    }
-
     @Bean
     public RestClient restClient() {
         return RestClient.builder().baseUrl(kudaGoBaseUrl).build();
