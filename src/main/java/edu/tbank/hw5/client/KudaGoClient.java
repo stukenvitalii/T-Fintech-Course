@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class KudaGoClient {
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     @Value("${app.categories-endpoint}")
     private String categoriesEndpoint;
@@ -28,13 +28,12 @@ public class KudaGoClient {
 
     public List<Category> getAllCategories() {
         try {
-            return restTemplate
-                    .exchange(
-                            categoriesEndpoint,
-                            HttpMethod.GET,
-                            null,
-                            new ParameterizedTypeReference<List<Category>>() {}
-                    ).getBody();
+            return restClient
+                    .method(HttpMethod.GET)
+                    .uri(categoriesEndpoint)
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<List<Category>>() {})
+                    .getBody();
         } catch (RestClientException e) {
             log.error("Error fetching categories from API: {}", e.getMessage());
             return Collections.emptyList();
@@ -43,13 +42,12 @@ public class KudaGoClient {
 
     public List<Location> getAllLocations() {
         try {
-            return restTemplate
-                    .exchange(
-                            locationsEndpoint,
-                            HttpMethod.GET,
-                            null,
-                            new ParameterizedTypeReference<List<Location>>() {}
-                    ).getBody();
+            return restClient
+                    .method(HttpMethod.GET)
+                    .uri(locationsEndpoint)
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<List<Location>>() {})
+                    .getBody();
         } catch (RestClientException e) {
             log.error("Error fetching locations from API: {}", e.getMessage());
             return Collections.emptyList();
