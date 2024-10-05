@@ -8,7 +8,9 @@ import edu.tbank.hw8.service.CurrencyCacheService;
 import edu.tbank.hw8.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Currency;
 import java.util.List;
@@ -22,6 +24,12 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public List<ValuteDto> getDailyRates() {
+        List<ValuteDto> response = currencyCacheService.getDailyRates();
+        if (response.isEmpty()) {
+            log.error("Api is unavailable!");
+            throw new HttpServerErrorException(HttpStatusCode.valueOf(503),"Api is unavailable");
+        }
+
         log.info("Getting daily rates from api (maybe cached)");
         return currencyCacheService.getDailyRates();
     }
