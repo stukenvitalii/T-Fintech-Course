@@ -1,5 +1,8 @@
 package edu.tbank.hw8.exception;
 
+import edu.tbank.hw8.exception.response.BadRequestErrorResponse;
+import edu.tbank.hw8.exception.response.NotFoundErrorResponse;
+import edu.tbank.hw8.exception.response.ServiceUnavailableErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,34 +16,34 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(HttpClientErrorException.NotFound.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(HttpClientErrorException.NotFound ex) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<NotFoundErrorResponse> handleNotFound(HttpClientErrorException.NotFound ex) {
+        return new ResponseEntity<>(new NotFoundErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(HttpClientErrorException.BadRequest ex) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<BadRequestErrorResponse> handleBadRequest(HttpClientErrorException.BadRequest ex) {
+        return new ResponseEntity<>(new BadRequestErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<BadRequestErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new BadRequestErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<ErrorResponse> handleServiceUnavailable(HttpServerErrorException ex) {
+    public ResponseEntity<ServiceUnavailableErrorResponse> handleServiceUnavailable(HttpServerErrorException ex) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Retry-After", "3600");
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage()), headers, HttpStatus.SERVICE_UNAVAILABLE);
+        return new ResponseEntity<>(new ServiceUnavailableErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage()), headers, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(CurrencyDoesntExistException.class)
-    public ResponseEntity<ErrorResponse> handleCurrencyDoesntExistException(CurrencyDoesntExistException ex) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<BadRequestErrorResponse> handleCurrencyDoesntExistException(CurrencyDoesntExistException ex) {
+        return new ResponseEntity<>(new BadRequestErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CurrencyNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCurrencyNotFound(CurrencyNotFoundException ex) {
-        return new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<NotFoundErrorResponse> handleCurrencyNotFound(CurrencyNotFoundException ex) {
+        return new ResponseEntity<>(new NotFoundErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 }
