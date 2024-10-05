@@ -27,8 +27,8 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpServerErrorException.ServiceUnavailable.class)
-    public ResponseEntity<ErrorResponse> handleServiceUnavailable(HttpServerErrorException.ServiceUnavailable ex) {
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<ErrorResponse> handleServiceUnavailable(HttpServerErrorException ex) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Retry-After", "3600");
         return new ResponseEntity<>(new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage()), headers, HttpStatus.SERVICE_UNAVAILABLE);
