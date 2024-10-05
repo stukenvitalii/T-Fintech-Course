@@ -18,9 +18,6 @@ resilience4j.circuitbreaker:
       permittedNumberOfCallsInHalfOpenState: 3
       automaticTransitionFromOpenToHalfOpenEnabled: true
 
-springdoc:
-  show-actuator=true
-
 management:
   health:
     circuitbreakers:
