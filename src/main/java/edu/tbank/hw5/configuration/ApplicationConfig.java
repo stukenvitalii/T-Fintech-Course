@@ -7,5 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ApplicationConfig(
         @NotNull String kudaGoUrl,
         @NotNull String categoriesEndpoint,
-        @NotNull String locationsEndpoint
+        @NotNull String locationsEndpoint,
+        @NotNull String threads
 ) {}
