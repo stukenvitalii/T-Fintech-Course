@@ -6,10 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class KudaGoClient {
-    private final RestClient restClient;
+    private final WebClient webClient;
 
     @Value("${app.categories-endpoint}")
     private String categoriesEndpoint;
@@ -26,31 +25,25 @@ public class KudaGoClient {
     @Value("${app.locations-endpoint}")
     private String locationsEndpoint;
 
-    public List<Category> getAllCategories() {
-        try {
-            return restClient
-                    .method(HttpMethod.GET)
-                    .uri(categoriesEndpoint)
-                    .retrieve()
-                    .toEntity(new ParameterizedTypeReference<List<Category>>() {})
-                    .getBody();
-        } catch (RestClientException e) {
-            log.error("Error fetching categories from API: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+    public Mono<List<Category>> getAllCategories() {
+        return webClient.get()
+                .uri(categoriesEndpoint)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Category>>() {})
+                .onErrorResume(e -> {
+                    log.error("Error fetching categories from API: {}", e.getMessage());
+                    return Mono.just(Collections.emptyList());
+                });
     }
 
-    public List<Location> getAllLocations() {
-        try {
-            return restClient
-                    .method(HttpMethod.GET)
-                    .uri(locationsEndpoint)
-                    .retrieve()
-                    .toEntity(new ParameterizedTypeReference<List<Location>>() {})
-                    .getBody();
-        } catch (RestClientException e) {
-            log.error("Error fetching locations from API: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+    public Mono<List<Location>> getAllLocations() {
+        return webClient.get()
+                .uri(locationsEndpoint)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Location>>() {})
+                .onErrorResume(e -> {
+                    log.error("Error fetching locations from API: {}", e.getMessage());
+                    return Mono.just(Collections.emptyList());
+                });
     }
 }

@@ -13,9 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.tinkoff.measurementloggingstarter.annotation.Timed;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Timed
 @RequiredArgsConstructor
@@ -38,7 +42,7 @@ public class DataLoader {
     @PostConstruct
     public void initScheduler() {
         mainExecutorService = Executors.newFixedThreadPool(threadsNum);
-        schedulingExecutorService = Executors.newScheduledThreadPool(threadsNum);
+        schedulingExecutorService = Executors.newScheduledThreadPool(1);
 
         schedulingExecutorService.scheduleAtFixedRate(
                 this::retrieveData,
@@ -51,41 +55,32 @@ public class DataLoader {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<Callable<String>> tasks = List.of(
-                () -> fetchData("categories"),
-                () -> fetchData("locations")
-        );
-        try {
-            mainExecutorService.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Task interrupted", e);
-        }
+        Mono<List<Category>> categoriesMono = kudaGoClient.getAllCategories();
+        Mono<List<Location>> locationsMono = kudaGoClient.getAllLocations();
 
-        stopWatch.stop();
+        Mono.zip(categoriesMono, locationsMono)
+                .doOnTerminate(() -> {
+                    stopWatch.stop();
+                    log.info("retrieveData method took {} ms to execute", stopWatch.getTotalTimeMillis());
+                })
+                .subscribe(results -> {
+                    List<Category> categories = results.getT1();
+                    List<Location> locations = results.getT2();
 
-        log.info("retrieveData method took {} ms to execute", stopWatch.getTotalTimeMillis());
-    }
+                    if (!categories.isEmpty()) {
+                        log.info("Fetched {} categories from API", categories.size());
+                        categoryRepository.saveAll(categories);
+                    } else {
+                        log.warn("No categories fetched from API");
+                    }
 
-    private String fetchData(String type) {
-        if ("categories".equals(type)) {
-            List<Category> categories = kudaGoClient.getAllCategories();
-            if (categories != null) {
-                log.info("Fetched {} categories from API", categories.size());
-                categoryRepository.saveAll(categories);
-            } else {
-                log.warn("No categories fetched from API");
-            }
-        } else if ("locations".equals(type)) {
-            List<Location> locations = kudaGoClient.getAllLocations();
-            if (locations != null) {
-                log.info("Fetched {} locations from API", locations.size());
-                locationRepository.saveAll(locations);
-            } else {
-                log.warn("No locations fetched from API");
-            }
-        }
-        return "retrieved " + type;
+                    if (!locations.isEmpty()) {
+                        log.info("Fetched {} locations from API", locations.size());
+                        locationRepository.saveAll(locations);
+                    } else {
+                        log.warn("No locations fetched from API");
+                    }
+                }, error -> log.error("Error fetching data: {}", error.getMessage()));
     }
 
     @PreDestroy
