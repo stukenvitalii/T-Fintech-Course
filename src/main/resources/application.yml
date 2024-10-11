@@ -2,5 +2,5 @@ app:
   kuda-go-url: "https://kudago.com/public-api/v1.4"
   categories-endpoint: "/place-categories/"
   locations-endpoint: "/locations/"
-  threads: 1
+  threads: 16
   scheduler-period: 3600
