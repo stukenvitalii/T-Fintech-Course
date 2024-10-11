@@ -7,7 +7,8 @@ import edu.tbank.hw5.repository.CategoryRepository;
 import edu.tbank.hw5.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.tinkoff.measurementloggingstarter.annotation.Timed;
 
@@ -17,13 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class DataLoader implements CommandLineRunner {
+public class DataLoader {
     private final KudaGoClient kudaGoClient;
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
-    @Override
-    public void run(String... args) {
+    @EventListener
+    public void handleApplicationStartedEvent(ApplicationStartedEvent event) {
         log.info("Starting data loading process");
         retrieveCategories();
         retrieveLocations();
