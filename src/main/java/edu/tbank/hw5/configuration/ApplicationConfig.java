@@ -10,6 +10,7 @@ public record ApplicationConfig(
         @NotNull String kudaGoUrl,
         @NotNull String categoriesEndpoint,
         @NotNull String locationsEndpoint,
+        @NotNull String eventsEndpoint,
         @NotNull Integer threads,
         @NotNull Duration schedulerPeriod
 ) {}
