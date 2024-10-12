@@ -11,4 +11,5 @@ public class Event implements Serializable {
     Long id;
     String title;
     String price;
+    boolean isFree;
 }
