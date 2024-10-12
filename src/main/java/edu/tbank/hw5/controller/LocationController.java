@@ -1,6 +1,6 @@
 package edu.tbank.hw5.controller;
 
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,8 @@
 package edu.tbank.hw5.bootstrap;
 
 import edu.tbank.hw5.client.KudaGoClient;
-import edu.tbank.hw5.dto.Category;
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Category;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.repository.CategoryRepository;
 import edu.tbank.hw5.repository.LocationRepository;
 import jakarta.annotation.PostConstruct;
