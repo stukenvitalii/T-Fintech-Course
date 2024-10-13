@@ -5,6 +5,7 @@ app:
 
 currency-app:
   bank-api-url: "https://www.cbr.ru/scripts"
+  rates-endpoint: "/XML_daily.asp/"
   cache-eviction-interval: 3600000
 
 resilience4j.circuitbreaker:

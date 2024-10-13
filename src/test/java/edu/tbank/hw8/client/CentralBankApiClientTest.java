@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-class BankClientTest {
+class CentralBankApiClientTest {
 
     private WireMockServer wireMockServer;
 
@@ -42,7 +42,7 @@ class BankClientTest {
     private CircuitBreakerRegistry circuitBreakerRegistry;
 
     @SpyBean
-    private BankClient bankClient;
+    private CentralBankApiClient centralBankApiClient;
 
     @Autowired
     private CacheManager cacheManager;
@@ -104,9 +104,9 @@ class BankClientTest {
                                     </Valute>
                                 </ValCurs>""")));
 
-        Mockito.reset(bankClient);
+        Mockito.reset(centralBankApiClient);
 
-        List<Valute> valutes = bankClient.getDailyRates();
+        List<Valute> valutes = centralBankApiClient.getDailyRates();
 
         assertEquals(2, valutes.size());
         assertEquals("JPY", valutes.get(0).getCharCode());
@@ -121,9 +121,9 @@ class BankClientTest {
                         .withStatus(503)
                 ));
 
-        List<Valute> valutes = bankClient.getDailyRates();
+        List<Valute> valutes = centralBankApiClient.getDailyRates();
 
-        verify(bankClient).fallbackDailyRates(ArgumentMatchers.any(HttpServerErrorException.class));
+        verify(centralBankApiClient).fallbackDailyRates(ArgumentMatchers.any(HttpServerErrorException.class));
     }
 
     @Test
@@ -134,7 +134,7 @@ class BankClientTest {
                         .withStatus(503)
                 ));
 
-        List<Valute> valutes = bankClient.getDailyRates();
+        List<Valute> valutes = centralBankApiClient.getDailyRates();
 
         assertEquals(0, valutes.size());
     }
@@ -150,7 +150,7 @@ class BankClientTest {
 
         for (int i = 0; i < 3; i++) {
             try {
-                bankClient.getDailyRates();
+                centralBankApiClient.getDailyRates();
             } catch (Exception ignored) {
             }
             clearCache();
@@ -179,7 +179,7 @@ class BankClientTest {
                                 </ValCurs>""")));
 
         for (int i = 0; i < 3; i++) {
-            bankClient.getDailyRates();
+            centralBankApiClient.getDailyRates();
             clearCache();
         }
 
@@ -195,14 +195,14 @@ class BankClientTest {
                 ));
 
         for (int i = 0; i < 3; i++) {
-            bankClient.getDailyRates();
+            centralBankApiClient.getDailyRates();
             clearCache();
         }
 
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("bankClient");
         assertEquals(CircuitBreaker.State.OPEN, circuitBreaker.getState());
 
-        List<Valute> valutes = bankClient.getDailyRates();
+        List<Valute> valutes = centralBankApiClient.getDailyRates();
         assertTrue(valutes.isEmpty());
     }
 
@@ -215,7 +215,7 @@ class BankClientTest {
                 ));
 
         for (int i = 0; i < 3; i++) {
-            bankClient.getDailyRates();
+            centralBankApiClient.getDailyRates();
             clearCache();
         }
 
@@ -242,7 +242,7 @@ class BankClientTest {
                                 </ValCurs>""")));
 
         for (int i = 0; i < 3; i++) {
-            List<Valute> valutes = bankClient.getDailyRates();
+            List<Valute> valutes = centralBankApiClient.getDailyRates();
             assertEquals(1, valutes.size());
             clearCache();
         }

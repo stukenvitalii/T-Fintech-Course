@@ -5,6 +5,7 @@ import edu.tbank.hw8.entity.Valute;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
@@ -16,14 +17,17 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class BankClient {
+public class CentralBankApiClient {
     private final RestClient restClient;
 
-    @CircuitBreaker(name = "bankClient", fallbackMethod = "fallbackDailyRates")
+    @Value("${currency-app.rates-endpoint}")
+    private String ratesEndpoint;
+
+    @CircuitBreaker(name = "centralBankApiClient", fallbackMethod = "fallbackDailyRates")
     public List<Valute> getDailyRates() {
         ValCurs valCursResponse = restClient
                 .get()
-                .uri("/XML_daily.asp/")
+                .uri(ratesEndpoint)
                 .retrieve()
                 .onStatus(HttpStatusCode::is5xxServerError, (response, request) -> {
                     log.error("Error response: {}", response);
@@ -38,7 +42,7 @@ public class BankClient {
     }
 
     public List<Valute> fallbackDailyRates(Throwable throwable) {
-        log.warn("Api is unavailable! Fallback method fallbackDailyRates triggered due to {} ", throwable.getMessage());
+        log.warn("Api is unavailable! Fallback method fallbackDailyRates triggered due to {} ", throwable.getMessage(),throwable);
         return Collections.emptyList();
     }
 }
