@@ -6,6 +6,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
@@ -24,19 +25,20 @@ public class CentralBankApiClient {
     private String ratesEndpoint;
 
     @CircuitBreaker(name = "centralBankApiClient", fallbackMethod = "fallbackDailyRates")
+    @Cacheable("dailyRates")
     public List<Valute> getDailyRates() {
         ValCurs valCursResponse = restClient
                 .get()
                 .uri(ratesEndpoint)
                 .retrieve()
-                .onStatus(HttpStatusCode::is5xxServerError, (response, request) -> {
-                    log.error("Error response: {}", response);
-                    throw new HttpServerErrorException(HttpStatusCode.valueOf(503));
+                .onStatus(HttpStatusCode::is5xxServerError, (clientRequest, clientResponse) -> {
+                    log.error("Error response: {}", clientResponse);
+                    throw new HttpServerErrorException(clientResponse.getStatusCode());
                 })
                 .toEntity(ValCurs.class)
                 .getBody();
         if (valCursResponse == null) {
-            throw new HttpServerErrorException(HttpStatusCode.valueOf(503));
+            throw new HttpServerErrorException(HttpStatusCode.valueOf(500));
         }
         return valCursResponse.getValutes();
     }
