@@ -8,10 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Schema(description = "Error response for 400 Bad Request")
 public class BadRequestErrorResponse {
-
-    @Schema(description = "Error code", example = "400")
-    private int code;
-
     @Schema(description = "Error message", example = "Bad Request")
     private String message;
 }

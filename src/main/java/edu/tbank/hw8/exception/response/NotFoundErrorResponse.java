@@ -8,10 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Schema(description = "Error response for 404 Not Found")
 public class NotFoundErrorResponse {
-
-    @Schema(description = "Error code", example = "404")
-    private int code;
-
     @Schema(description = "Error message", example = "Not Found")
     private String message;
 }

@@ -8,10 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Schema(description = "Error response for 503 Service Unavailable")
 public class ServiceUnavailableErrorResponse {
-
-    @Schema(description = "Error code", example = "503")
-    private int code;
-
     @Schema(description = "Error message", example = "Service Unavailable")
     private String message;
 }
