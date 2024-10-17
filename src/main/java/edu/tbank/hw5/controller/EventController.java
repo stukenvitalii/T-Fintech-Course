@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/events")
@@ -22,15 +22,17 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventDto>> getEventsByBudget(
+    public Mono<ResponseEntity<List<EventDto>>> getEventsByBudget(
             @RequestParam double budget,
             @RequestParam String currency,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo) {
         log.info("Received request to get events with budget: {}, currency: {}, dateFrom: {}, dateTo: {}", budget, currency, dateFrom, dateTo);
-        CompletableFuture<List<EventDto>> eventsFuture = eventService.getEventsByBudgetAsync(budget, currency, dateFrom, dateTo);
-        List<EventDto> events = eventsFuture.join();
-        log.info("Returning {} events", events.size());
-        return ResponseEntity.ok(events);
+
+        return eventService.getEventsByBudgetAsync(budget, currency, dateFrom, dateTo)
+                .map(events -> {
+                    log.info("Returning {} events", events.size());
+                    return ResponseEntity.ok(events);
+                });
     }
 }
