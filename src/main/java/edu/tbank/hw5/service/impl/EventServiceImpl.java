@@ -8,11 +8,11 @@ import edu.tbank.hw5.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,31 +22,34 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
 
     @Override
-    public List<EventDto> getEventsByBudget() {
-        List<Event> events = eventRepository.getEventsBetweenDates();
-        log.info("Found {} events", events.size());
-        return events.stream()
+    public Flux<EventDto> getEventsByBudget() {
+        return eventRepository.getEventsByBudget()
                 .map(eventMapper::toDto)
-                .collect(Collectors.toList());
+                .doOnNext(eventDto -> log.info("Found event: {}", eventDto));
     }
 
     @Override
-    public CompletableFuture<List<EventDto>> getEventsByBudgetAsync(double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
-        CompletableFuture<List<Event>> eventsFuture = eventRepository.getEventsBetweenDates(dateFrom, dateTo);
-        CompletableFuture<Double> budgetInRublesFuture = convertBudgetToRublesAsync(budget, currency);
+    public Mono<List<EventDto>> getEventsByBudgetAsync(double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
+        Mono<Flux<Event>> eventsMono = eventRepository.getEventsByBudget(dateFrom, dateTo);
+        Mono<Double> budgetInRublesMono = convertBudgetToRublesAsync(budget, currency);
 
-        return eventsFuture.thenCombine(budgetInRublesFuture, (events, budgetInRubles) -> {
-            log.info("Calculated budget in rubles: {}", budgetInRubles);
-            return events.stream()
-                    .map(eventMapper::toDto)
-                    .filter(eventDto -> eventDto.getPrice() <= budgetInRubles)
-                    .collect(Collectors.toList());
-        });
+        return Mono.zip(eventsMono, budgetInRublesMono)
+                .flatMap(tuple -> {
+                    Flux<Event> eventsFlux = tuple.getT1();
+                    Double budgetInRubles = tuple.getT2();
+                    log.info("Calculated budget in rubles: {}", budgetInRubles);
+
+                    return eventsFlux
+                            .map(eventMapper::toDto)
+                            .filter(eventDto -> eventDto.getPrice() <= budgetInRubles)
+                            .collectList();
+                });
     }
 
-    private CompletableFuture<Double> convertBudgetToRublesAsync(double budget, String currency) {
+
+    private Mono<Double> convertBudgetToRublesAsync(double budget, String currency) {
         double conversionRate = getConversionRate(currency);
-        return CompletableFuture.supplyAsync(() -> budget * conversionRate);
+        return Mono.just(budget * conversionRate);
     }
 
     private double getConversionRate(String currency) {
