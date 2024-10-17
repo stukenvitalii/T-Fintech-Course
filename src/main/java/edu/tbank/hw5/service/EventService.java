@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface EventService {
     Flux<EventDto> getEventsByBudget();
-    Mono<List<EventDto>> getEventsByBudgetAsync(double budget, String currency, LocalDate dateFrom, LocalDate dateTo);
+    Mono<List<EventDto>> getEventsByBudgetAsync(Double budget, String currency, LocalDate dateFrom, LocalDate dateTo);
 }
