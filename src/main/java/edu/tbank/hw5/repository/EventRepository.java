@@ -5,13 +5,13 @@ import edu.tbank.hw5.entity.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class EventRepository {
         log.info("Getting events between {} and {}", formatEpochSecond(startDateTimestamp), formatEpochSecond(endDateTimestamp));
     }
 
-    public List<Event> getEventsBetweenDates() {
+    public Flux<Event> getEventsByBudget() {
         LocalDate endDate = LocalDate.now().minusMonths(1);
         LocalDate startDate = LocalDate.now().minusMonths(6);
 
@@ -41,12 +41,12 @@ public class EventRepository {
 
         logDateRange(startDateTimestamp, endDateTimestamp);
 
-        List<Event> events = kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp);
-        log.info("Retrieved {} events", events.size());
-        return events;
+        return kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp)
+                .doOnNext(event -> log.info("Retrieved event: {}", event))
+                .doOnComplete(() -> log.info("Finished retrieving events"));
     }
 
-    public CompletableFuture<List<Event>> getEventsBetweenDates(LocalDate dateFrom, LocalDate dateTo) {
+    public Mono<Flux<Event>> getEventsByBudget(LocalDate dateFrom, LocalDate dateTo) {
         LocalDate startDate = (dateFrom != null) ? dateFrom : LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
         LocalDate endDate = (dateTo != null) ? dateTo : startDate.plusDays(6);
 
@@ -55,10 +55,10 @@ public class EventRepository {
 
         logDateRange(startDateTimestamp, endDateTimestamp);
 
-        return kudaGoClient.getEventsBetweenDatesAsync(startDateTimestamp, endDateTimestamp)
-                .thenApply(events -> {
-                    log.info("Retrieved {} events", events.size());
-                    return events;
-                });
+        return Mono.just(
+                kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp)
+                        .doOnNext(event -> log.info("Retrieved event: {}", event))
+                        .doOnComplete(() -> log.info("Finished retrieving events"))
+        );
     }
 }
