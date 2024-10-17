@@ -1,8 +1,6 @@
 package edu.tbank.hw5.bootstrap;
 
 import edu.tbank.hw5.client.KudaGoClient;
-import edu.tbank.hw5.entity.Category;
-import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.repository.CategoryRepository;
 import edu.tbank.hw5.repository.LocationRepository;
 import jakarta.annotation.PostConstruct;
@@ -13,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.tinkoff.measurementloggingstarter.annotation.Timed;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -51,41 +50,62 @@ public class DataLoader {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<Callable<String>> tasks = List.of(
-                () -> fetchData("categories"),
-                () -> fetchData("locations")
+        List<Callable<CompletableFuture<String>>> tasks = List.of(
+                () -> fetchData("categories").toFuture(),
+                () -> fetchData("locations").toFuture()
         );
+
         try {
-            mainExecutorService.invokeAll(tasks);
+            List<Future<CompletableFuture<String>>> results = mainExecutorService.invokeAll(tasks);
+            for (Future<CompletableFuture<String>> result : results) {
+                result.get().thenAccept(outcome -> log.info("Task outcome: {}", outcome));
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Task interrupted", e);
+        } catch (ExecutionException e) {
+            log.error("Task execution failed: {}", e.getMessage(), e);
         }
 
         stopWatch.stop();
-
         log.info("retrieveData method took {} ms to execute", stopWatch.getTotalTimeMillis());
     }
 
-    private String fetchData(String type) {
+    private Mono<String> fetchData(String type) {
         if ("categories".equals(type)) {
-            List<Category> categories = kudaGoClient.getAllCategories();
-            if (categories != null) {
-                log.info("Fetched {} categories from API", categories.size());
-                categoryRepository.saveAll(categories);
-            } else {
-                log.warn("No categories fetched from API");
-            }
+            return kudaGoClient.getAllCategories()
+                    .collectList()
+                    .doOnNext(categories -> {
+                        if (categories.isEmpty()) {
+                            log.warn("No categories fetched from API or empty list returned");
+                        } else {
+                            log.info("Fetched {} categories from API", categories.size());
+                            categoryRepository.saveAll(categories);
+                        }
+                    })
+                    .then(Mono.just("retrieved categories"))
+                    .onErrorResume(e -> {
+                        log.error("Error fetching categories: {}", e.getMessage(), e);
+                        return Mono.just("failed to retrieve categories");
+                    });
         } else if ("locations".equals(type)) {
-            List<Location> locations = kudaGoClient.getAllLocations();
-            if (locations != null) {
-                log.info("Fetched {} locations from API", locations.size());
-                locationRepository.saveAll(locations);
-            } else {
-                log.warn("No locations fetched from API");
-            }
+            return kudaGoClient.getAllLocations()
+                    .collectList()
+                    .doOnNext(locations -> {
+                        if (locations.isEmpty()) {
+                            log.warn("No locations fetched from API or empty list returned");
+                        } else {
+                            log.info("Fetched {} locations from API", locations.size());
+                            locationRepository.saveAll(locations);
+                        }
+                    })
+                    .then(Mono.just("retrieved locations"))
+                    .onErrorResume(e -> {
+                        log.error("Error fetching locations: {}", e.getMessage(), e);
+                        return Mono.just("failed to retrieve locations");
+                    });
         }
-        return "retrieved " + type;
+        return Mono.just("invalid type");
     }
 
     @PreDestroy
