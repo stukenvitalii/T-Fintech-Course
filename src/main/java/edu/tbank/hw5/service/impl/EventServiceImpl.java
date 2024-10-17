@@ -29,7 +29,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Mono<List<EventDto>> getEventsByBudgetAsync(double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
+    public Mono<List<EventDto>> getEventsByBudgetAsync(Double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
         Mono<Flux<Event>> eventsMono = eventRepository.getEventsByBudget(dateFrom, dateTo);
         Mono<Double> budgetInRublesMono = convertBudgetToRublesAsync(budget, currency);
 
