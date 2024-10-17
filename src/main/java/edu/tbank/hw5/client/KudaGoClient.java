@@ -4,24 +4,26 @@ import edu.tbank.hw5.dto.EventApiResponse;
 import edu.tbank.hw5.entity.Category;
 import edu.tbank.hw5.entity.Event;
 import edu.tbank.hw5.entity.Location;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class KudaGoClient {
     private final RestClient restClient;
+    private final WebClient webClient;
 
     @Value("${app.categories-endpoint}")
     private String categoriesEndpoint;
@@ -32,52 +34,57 @@ public class KudaGoClient {
     @Value("${app.events-endpoint}")
     private String eventsEndpoint;
 
-    public List<Category> getAllCategories() {
-        try {
-            return restClient
-                    .method(HttpMethod.GET)
-                    .uri(categoriesEndpoint)
-                    .retrieve()
-                    .toEntity(new ParameterizedTypeReference<List<Category>>() {})
-                    .getBody();
-        } catch (RestClientException e) {
-            log.error("Error fetching categories from API: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+    public Flux<Category> getAllCategories() {
+        return webClient
+                .method(HttpMethod.GET)
+                .uri(categoriesEndpoint)
+                .retrieve()
+                .bodyToFlux(Category.class)
+                .onErrorResume(e -> {
+                    log.error("Error fetching categories from API: {}", e.getMessage());
+                    return Flux.empty();
+                });
     }
 
-    public List<Location> getAllLocations() {
-        try {
-            return restClient
-                    .method(HttpMethod.GET)
-                    .uri(locationsEndpoint)
-                    .retrieve()
-                    .toEntity(new ParameterizedTypeReference<List<Location>>() {})
-                    .getBody();
-        } catch (RestClientException e) {
-            log.error("Error fetching locations from API: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+    public Flux<Location> getAllLocations() {
+        return webClient
+                .method(HttpMethod.GET)
+                .uri(locationsEndpoint)
+                .retrieve()
+                .bodyToFlux(Location.class)
+                .onErrorResume(e -> {
+                    log.error("Error fetching locations from API: {}", e.getMessage());
+                    return Flux.empty();
+                });
     }
 
-    public List<Event> getEventsBetweenDates(long startDateTimestamp, long endDateTimestamp) {
-        try {
-            EventApiResponse response = restClient
-                    .method(HttpMethod.GET)
-                    .uri(eventsEndpoint +
-                                    "?actual_since={startDate}&actual_until={endDate}&fields=id,title,price",
-                            startDateTimestamp, endDateTimestamp)
-                    .retrieve()
-                    .toEntity(EventApiResponse.class)
-                    .getBody();
-            return response != null ? response.getEvents() : Collections.emptyList();
-        } catch (RestClientException e) {
-            log.error("Error fetching events from API: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+    public Flux<Event> getEventsBetweenDates(long startDateTimestamp, long endDateTimestamp) {
+        return webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder
+                        .path(eventsEndpoint)
+                        .queryParam("actual_since", startDateTimestamp)
+                        .queryParam("actual_until", endDateTimestamp)
+                        .queryParam("fields", "id,title,price")
+                        .build())
+                .retrieve()
+                .bodyToMono(EventApiResponse.class)
+                .flatMapMany(response -> response != null ? Flux.fromIterable(response.getEvents()) : Flux.empty())
+                .onErrorResume(e -> {
+                    log.error("Error fetching events from API: {}", e.getMessage());
+                    return Flux.empty();
+                });
     }
 
-    public CompletableFuture<List<Event>> getEventsBetweenDatesAsync(long startDateTimestamp, long endDateTimestamp) {
-        return CompletableFuture.supplyAsync(() -> getEventsBetweenDates(startDateTimestamp, endDateTimestamp));
+
+    private Mono<Event> processEvent(Event event) {
+        return Mono.just(event);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class CombinedResponse {
+        private final List<Category> categories;
+        private final List<Location> locations;
     }
 }
