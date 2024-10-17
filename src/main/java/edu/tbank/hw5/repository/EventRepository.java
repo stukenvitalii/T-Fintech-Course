@@ -32,7 +32,7 @@ public class EventRepository {
         log.info("Getting events between {} and {}", formatEpochSecond(startDateTimestamp), formatEpochSecond(endDateTimestamp));
     }
 
-    public List<Event> getEventsByBudget() {
+    public List<Event> getEventsBetweenDates() {
         LocalDate endDate = LocalDate.now().minusMonths(1);
         LocalDate startDate = LocalDate.now().minusMonths(6);
 
@@ -46,7 +46,7 @@ public class EventRepository {
         return events;
     }
 
-    public CompletableFuture<List<Event>> getEventsByBudget(LocalDate dateFrom, LocalDate dateTo) {
+    public CompletableFuture<List<Event>> getEventsBetweenDates(LocalDate dateFrom, LocalDate dateTo) {
         LocalDate startDate = (dateFrom != null) ? dateFrom : LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
         LocalDate endDate = (dateTo != null) ? dateTo : startDate.plusDays(6);
 
