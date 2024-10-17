@@ -19,6 +19,7 @@ dependencies {
     implementation project (':measurement-logging-starter')
     implementation 'org.mapstruct:mapstruct:1.6.2'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.34'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
