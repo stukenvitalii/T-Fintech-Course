@@ -23,7 +23,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> getEventsByBudget() {
-        List<Event> events = eventRepository.getEventsByBudget();
+        List<Event> events = eventRepository.getEventsBetweenDates();
         log.info("Found {} events", events.size());
         return events.stream()
                 .map(eventMapper::toDto)
@@ -32,7 +32,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public CompletableFuture<List<EventDto>> getEventsByBudgetAsync(double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
-        CompletableFuture<List<Event>> eventsFuture = eventRepository.getEventsByBudget(dateFrom, dateTo);
+        CompletableFuture<List<Event>> eventsFuture = eventRepository.getEventsBetweenDates(dateFrom, dateTo);
         CompletableFuture<Double> budgetInRublesFuture = convertBudgetToRublesAsync(budget, currency);
 
         return eventsFuture.thenCombine(budgetInRublesFuture, (events, budgetInRubles) -> {
