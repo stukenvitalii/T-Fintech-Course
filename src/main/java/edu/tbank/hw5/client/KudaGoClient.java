@@ -4,8 +4,6 @@ import edu.tbank.hw5.dto.EventApiResponse;
 import edu.tbank.hw5.entity.Category;
 import edu.tbank.hw5.entity.Event;
 import edu.tbank.hw5.entity.Location;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -74,17 +69,5 @@ public class KudaGoClient {
                     log.error("Error fetching events from API: {}", e.getMessage());
                     return Flux.empty();
                 });
-    }
-
-
-    private Mono<Event> processEvent(Event event) {
-        return Mono.just(event);
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class CombinedResponse {
-        private final List<Category> categories;
-        private final List<Location> locations;
     }
 }
