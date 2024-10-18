@@ -1,6 +1,6 @@
 package edu.tbank.hw5.service;
 
-import edu.tbank.hw5.dto.Category;
+import edu.tbank.hw5.entity.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

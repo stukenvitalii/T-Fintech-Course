@@ -1,6 +1,6 @@
 package edu.tbank.hw5.controller;
 
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.service.LocationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

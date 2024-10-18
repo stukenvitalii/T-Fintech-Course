@@ -1,4 +1,4 @@
-package edu.tbank.hw5.dto;
+package edu.tbank.hw5.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
