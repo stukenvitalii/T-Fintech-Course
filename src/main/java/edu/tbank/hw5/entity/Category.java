@@ -1,4 +1,4 @@
-package edu.tbank.hw5.dto;
+package edu.tbank.hw5.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Location implements Serializable {
+public class Category implements Serializable {
+    private Long id;
     private String slug;
     private String name;
 }

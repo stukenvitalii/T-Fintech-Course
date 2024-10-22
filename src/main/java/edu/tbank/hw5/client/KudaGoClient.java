@@ -1,7 +1,7 @@
 package edu.tbank.hw5.client;
 
-import edu.tbank.hw5.dto.Category;
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Category;
+import edu.tbank.hw5.entity.Location;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
