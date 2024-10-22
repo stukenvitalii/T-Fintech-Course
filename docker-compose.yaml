@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: "no"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fintech
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+  liquibase-migrations:
+    image: liquibase/liquibase:4.25
+    depends_on:
+      - postgres
+    command:
+      - --changelog-file=master.xml
+      - --driver=org.postgresql.Driver
+      - --url=jdbc:postgresql://postgres:5432/fintech
+      - --username=postgres
+      - --password=postgres
+      - update
+    volumes:
+      - ./src/main/resources/db/changelog:/liquibase/changelog
+
+
+volumes:
+  postgres_data:
