@@ -1,6 +1,6 @@
 package edu.tbank.hw5.repository;
 
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Location;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
