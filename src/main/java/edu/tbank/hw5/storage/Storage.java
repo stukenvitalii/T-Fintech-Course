@@ -1,10 +1,13 @@
 package edu.tbank.hw5.storage;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@Component
 public class Storage<K, V> {
     private final ConcurrentMap<K, V> storage = new ConcurrentHashMap<>();
 
