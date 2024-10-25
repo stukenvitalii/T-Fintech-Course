@@ -9,4 +9,5 @@ public interface CustomLinkedList<T> {
     int size();
     boolean contains(T t);
     void addAll(List<T> list);
+    CustomIterator<T> iterator();
 }
