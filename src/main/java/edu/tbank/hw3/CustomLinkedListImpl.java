@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
@@ -89,6 +92,11 @@ public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
         }
     }
 
+    @Override
+    public CustomIterator<T> iterator() {
+        return new CustomLinkedListIterator();
+    }
+
     public void addAll(CustomLinkedListImpl<T> list) {
         Node<T> current = list.head;
         while (current != null) {
@@ -114,4 +122,31 @@ public class CustomLinkedListImpl<T> implements CustomLinkedList<T> {
         private T data;
         private Node<T> next;
     }
+
+    private class CustomLinkedListIterator implements CustomIterator<T>{
+        private Node<T> currentNode = head;
+
+        @Override
+        public boolean hasNext() {
+            return currentNode != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T data = currentNode.getData();
+            currentNode = currentNode.getNext();
+            return data;
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super T> action) {
+            Objects.requireNonNull(action);
+            while (hasNext())
+                action.accept(next());
+        }
+    }
+
 }
