@@ -30,4 +30,12 @@ public class Storage<K, V> {
     public int size() {
         return storage.size();
     }
+
+    public void putIfAbsent(K key, V value) {
+        storage.putIfAbsent(key, value);
+    }
+
+    public V getOrDefault(K key, V defaultValue) {
+        return storage.getOrDefault(key, defaultValue);
+    }
 }

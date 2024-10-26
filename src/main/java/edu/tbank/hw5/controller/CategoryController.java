@@ -1,6 +1,7 @@
 package edu.tbank.hw5.controller;
 
 import edu.tbank.hw5.dto.Category;
+import edu.tbank.hw5.memento.CategoryMemento;
 import edu.tbank.hw5.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,10 @@ public class CategoryController {
     @DeleteMapping("/delete/{id}")
     public void deleteCategoryById(@PathVariable Long id) {
         categoryService.deleteCategoryById(id);
+    }
+
+    @GetMapping("/{id}/history")
+    public List<CategoryMemento> getCategoryHistory(@PathVariable Long id) {
+        return categoryService.getCategoryHistoryById(id);
     }
 }

@@ -2,7 +2,9 @@ package edu.tbank.hw3;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,5 +105,65 @@ class CustomLinkedListImplTest {
         assertEquals(1, list.get(0));
         assertNull(list.get(1));
         assertEquals(3, list.get(2));
+    }
+
+    @Test
+    void iteratorNext_ReturnsCorrectElements_whenCalled() {
+        CustomLinkedListImpl<Integer> list = new CustomLinkedListImpl<>();
+        list.add(1);
+        list.add(2);
+
+        CustomIterator<Integer> iterator = list.iterator();
+
+        Integer first = iterator.next();
+        assertEquals(1, first);
+
+        Integer second = iterator.next();
+        assertEquals(2, second);
+    }
+
+    @Test
+    void iteratorHasNext_ReturnsFalse_OnTheEndOfList() {
+        CustomLinkedListImpl<Integer> list = new CustomLinkedListImpl<>();
+        list.add(1);
+        list.add(2);
+
+        CustomIterator<Integer> iterator = list.iterator();
+        iterator.next();
+        iterator.next();
+
+        boolean result = iterator.hasNext();
+
+        assertFalse(result);
+    }
+
+    @Test
+    void iteratorNext_ThrowsNoSuchElementException_WhenNoElementsLeft() {
+        CustomLinkedListImpl<Integer> list = new CustomLinkedListImpl<>();
+        list.add(1);
+        list.add(2);
+
+        CustomIterator<Integer> iterator = list.iterator();
+        iterator.next();
+        iterator.next();
+
+        assertThrows(NoSuchElementException.class, iterator::next);
+    }
+
+    @Test
+    void forEachRemaining_ShouldProcessRemainingElements_AfterNextIsCalled() {
+        CustomLinkedListImpl<String> list = new CustomLinkedListImpl<>();
+        list.add("first");
+        list.add("second");
+        list.add("third");
+
+        List<String> collectedElements = new ArrayList<>();
+
+        CustomIterator<String> iterator = list.iterator();
+        iterator.next();
+
+        iterator.forEachRemaining(collectedElements::add);
+
+        assertEquals(List.of("second", "third"), collectedElements);
     }
 }
