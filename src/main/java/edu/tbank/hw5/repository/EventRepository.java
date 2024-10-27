@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,7 +45,7 @@ public class EventRepository {
                 .doOnComplete(() -> log.info("Finished retrieving events"));
     }
 
-    public Mono<Flux<Event>> getEventsByBudget(LocalDate dateFrom, LocalDate dateTo) {
+    public Flux<Event> getEventsByBudget(LocalDate dateFrom, LocalDate dateTo) {
         LocalDate startDate = (dateFrom != null) ? dateFrom : LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
         LocalDate endDate = (dateTo != null) ? dateTo : startDate.plusDays(6);
 
@@ -55,10 +54,8 @@ public class EventRepository {
 
         logDateRange(startDateTimestamp, endDateTimestamp);
 
-        return Mono.just(
-                kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp)
-                        .doOnNext(event -> log.info("Retrieved event: {}", event))
-                        .doOnComplete(() -> log.info("Finished retrieving events"))
-        );
+        return kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp)
+                .doOnNext(event -> log.info("Retrieved event: {}", event))
+                .doOnComplete(() -> log.info("Finished retrieving events"));
     }
 }
