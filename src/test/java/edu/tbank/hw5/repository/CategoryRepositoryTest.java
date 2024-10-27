@@ -1,6 +1,6 @@
 package edu.tbank.hw5.repository;
 
-import edu.tbank.hw5.dto.Category;
+import edu.tbank.hw5.entity.Category;
 import edu.tbank.hw5.storage.Storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

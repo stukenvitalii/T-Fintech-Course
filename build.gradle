@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'jacoco'
 }
 
 repositories {
@@ -22,9 +21,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation project (':measurement-logging-starter')
     implementation 'org.mapstruct:mapstruct:1.6.2'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 
     implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.0.2'
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.0.2'
@@ -43,39 +42,11 @@ dependencies {
     testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    implementation 'org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-14'
     testImplementation 'org.mockito:mockito-core:4.0.0'
-    testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
+    testImplementation 'io.projectreactor:reactor-test'
 }
 
 test {
     useJUnitPlatform()
     include '**/*Test.class'
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn test // tests are required to run before generating the report
-
-    reports {
-        xml {
-            enabled true
-        }
-
-        html {
-            enabled true
-        }
-    }
-
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    '**/dto/**', // Exclude DTO classes
-                    '**/hw2/**', // Exclude hw2 package
-                    '**/hw3/**', // Exclude hw3 package
-                    '**/hw5/Application.class', // Exclude hw3 package
-            ])
-        })
-    }
 }

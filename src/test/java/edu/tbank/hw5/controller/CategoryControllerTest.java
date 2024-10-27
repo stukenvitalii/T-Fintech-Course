@@ -1,6 +1,6 @@
 package edu.tbank.hw5.controller;
 
-import edu.tbank.hw5.dto.Category;
+import edu.tbank.hw5.entity.Category;
 import edu.tbank.hw5.service.CategoryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
