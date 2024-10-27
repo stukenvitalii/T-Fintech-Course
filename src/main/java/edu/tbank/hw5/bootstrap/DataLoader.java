@@ -1,6 +1,7 @@
 package edu.tbank.hw5.bootstrap;
 
 import edu.tbank.hw5.client.KudaGoClient;
+import edu.tbank.hw5.entity.type.EntityType;
 import edu.tbank.hw5.repository.CategoryRepository;
 import edu.tbank.hw5.repository.LocationRepository;
 import jakarta.annotation.PostConstruct;
@@ -51,8 +52,8 @@ public class DataLoader {
         stopWatch.start();
 
         List<Callable<CompletableFuture<String>>> tasks = List.of(
-                () -> fetchData("categories").toFuture(),
-                () -> fetchData("locations").toFuture()
+                () -> fetchData(EntityType.CATEGORY).toFuture(),
+                () -> fetchData(EntityType.LOCATION).toFuture()
         );
 
         try {
@@ -71,41 +72,50 @@ public class DataLoader {
         log.info("retrieveData method took {} ms to execute", stopWatch.getTotalTimeMillis());
     }
 
-    private Mono<String> fetchData(String type) {
-        if ("categories".equals(type)) {
-            return kudaGoClient.getAllCategories()
-                    .collectList()
-                    .doOnNext(categories -> {
-                        if (categories.isEmpty()) {
-                            log.warn("No categories fetched from API or empty list returned");
-                        } else {
-                            log.info("Fetched {} categories from API", categories.size());
-                            categoryRepository.saveAll(categories);
-                        }
-                    })
-                    .then(Mono.just("retrieved categories"))
-                    .onErrorResume(e -> {
-                        log.error("Error fetching categories: {}", e.getMessage(), e);
-                        return Mono.just("failed to retrieve categories");
-                    });
-        } else if ("locations".equals(type)) {
-            return kudaGoClient.getAllLocations()
-                    .collectList()
-                    .doOnNext(locations -> {
-                        if (locations.isEmpty()) {
-                            log.warn("No locations fetched from API or empty list returned");
-                        } else {
-                            log.info("Fetched {} locations from API", locations.size());
-                            locationRepository.saveAll(locations);
-                        }
-                    })
-                    .then(Mono.just("retrieved locations"))
-                    .onErrorResume(e -> {
-                        log.error("Error fetching locations: {}", e.getMessage(), e);
-                        return Mono.just("failed to retrieve locations");
-                    });
+    private Mono<String> fetchData(EntityType type) {
+        if (EntityType.CATEGORY.equals(type)) {
+            return fetchCategories();
+        } else if (EntityType.LOCATION.equals(type)) {
+            return fetchLocations();
+        } else {
+            throw new IllegalArgumentException("Unknown entity type: " + type);
         }
-        return Mono.just("invalid type");
+    }
+
+    private Mono<String> fetchLocations() {
+        return kudaGoClient.getAllLocations()
+                .collectList()
+                .doOnNext(locations -> {
+                    if (locations.isEmpty()) {
+                        log.warn("No locations fetched from API or empty list returned");
+                    } else {
+                        log.info("Fetched {} locations from API", locations.size());
+                        locationRepository.saveAll(locations);
+                    }
+                })
+                .then(Mono.just("retrieved locations"))
+                .onErrorResume(e -> {
+                    log.error("Error fetching locations: {}", e.getMessage(), e);
+                    return Mono.just("failed to retrieve locations");
+                });
+    }
+
+    private Mono<String> fetchCategories() {
+        return kudaGoClient.getAllCategories()
+                .collectList()
+                .doOnNext(categories -> {
+                    if (categories.isEmpty()) {
+                        log.warn("No categories fetched from API or empty list returned");
+                    } else {
+                        log.info("Fetched {} categories from API", categories.size());
+                        categoryRepository.saveAll(categories);
+                    }
+                })
+                .then(Mono.just("retrieved categories"))
+                .onErrorResume(e -> {
+                    log.error("Error fetching categories: {}", e.getMessage(), e);
+                    return Mono.just("failed to retrieve categories");
+                });
     }
 
     @PreDestroy
