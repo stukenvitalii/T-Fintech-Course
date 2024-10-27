@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -22,41 +22,29 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
 
     @Override
-    public Flux<EventDto> getEventsByBudget() {
-        return eventRepository.getEventsByBudget()
-                .map(eventMapper::toDto)
-                .doOnNext(eventDto -> log.info("Found event: {}", eventDto));
+    public Flux<EventDto> getEventsByBudgetAsync(Double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
+        Flux<Event> eventsFlux = eventRepository.getEventsByBudget(dateFrom, dateTo);
+        Mono<BigDecimal> budgetInRublesMono = convertBudgetToRublesAsync(BigDecimal.valueOf(budget), currency);
+
+        return budgetInRublesMono.flatMapMany(budgetInRubles -> {
+            log.info("Calculated budget in rubles: {}", budgetInRubles);
+
+            return eventsFlux
+                    .map(eventMapper::toDto)
+                    .filter(eventDto -> BigDecimal.valueOf(eventDto.getPrice()).compareTo(budgetInRubles) <= 0);
+        });
     }
 
-    @Override
-    public Mono<List<EventDto>> getEventsByBudgetAsync(Double budget, String currency, LocalDate dateFrom, LocalDate dateTo) {
-        Mono<Flux<Event>> eventsMono = eventRepository.getEventsByBudget(dateFrom, dateTo);
-        Mono<Double> budgetInRublesMono = convertBudgetToRublesAsync(budget, currency);
-
-        return Mono.zip(eventsMono, budgetInRublesMono)
-                .flatMap(tuple -> {
-                    Flux<Event> eventsFlux = tuple.getT1();
-                    Double budgetInRubles = tuple.getT2();
-                    log.info("Calculated budget in rubles: {}", budgetInRubles);
-
-                    return eventsFlux
-                            .map(eventMapper::toDto)
-                            .filter(eventDto -> eventDto.getPrice() <= budgetInRubles)
-                            .collectList();
-                });
+    private Mono<BigDecimal> convertBudgetToRublesAsync(BigDecimal budget, String currency) {
+        BigDecimal conversionRate = getConversionRate(currency);
+        return Mono.just(budget.multiply(conversionRate));
     }
 
-
-    private Mono<Double> convertBudgetToRublesAsync(double budget, String currency) {
-        double conversionRate = getConversionRate(currency);
-        return Mono.just(budget * conversionRate);
-    }
-
-    private double getConversionRate(String currency) {
+    private BigDecimal getConversionRate(String currency) {
         return switch (currency) {
-            case "USD" -> 96.0;
-            case "EUR" -> 105.0;
-            default -> 1.0;
+            case "USD" -> BigDecimal.valueOf(96.0);
+            case "EUR" -> BigDecimal.valueOf(105.0);
+            default -> BigDecimal.valueOf(1.0);
         };
     }
 }
