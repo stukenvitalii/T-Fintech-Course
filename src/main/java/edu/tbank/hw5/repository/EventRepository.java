@@ -31,20 +31,6 @@ public class EventRepository {
         log.info("Getting events between {} and {}", formatEpochSecond(startDateTimestamp), formatEpochSecond(endDateTimestamp));
     }
 
-    public Flux<Event> getEventsByBudget() {
-        LocalDate endDate = LocalDate.now().minusMonths(1);
-        LocalDate startDate = LocalDate.now().minusMonths(6);
-
-        long startDateTimestamp = toEpochSecond(startDate);
-        long endDateTimestamp = toEpochSecond(endDate);
-
-        logDateRange(startDateTimestamp, endDateTimestamp);
-
-        return kudaGoClient.getEventsBetweenDates(startDateTimestamp, endDateTimestamp)
-                .doOnNext(event -> log.info("Retrieved event: {}", event))
-                .doOnComplete(() -> log.info("Finished retrieving events"));
-    }
-
     public Flux<Event> getEventsByBudget(LocalDate dateFrom, LocalDate dateTo) {
         LocalDate startDate = (dateFrom != null) ? dateFrom : LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
         LocalDate endDate = (dateTo != null) ? dateTo : startDate.plusDays(6);
