@@ -19,8 +19,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation project (':measurement-logging-starter')
     implementation 'org.mapstruct:mapstruct:1.6.2'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.liquibase:liquibase-core:4.29.2'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.34'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
@@ -31,6 +33,9 @@ dependencies {
     implementation 'org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-14'
     testImplementation 'org.mockito:mockito-core:4.0.0'
     testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.liquibase:liquibase-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 
 test {
