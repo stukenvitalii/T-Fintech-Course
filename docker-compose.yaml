@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
     command:
-      - --changelog-file=master.xml
+      - --changelog-file=db.changelog-master.yaml
       - --driver=org.postgresql.Driver
       - --url=jdbc:postgresql://postgres:5432/fintech
       - --username=postgres
