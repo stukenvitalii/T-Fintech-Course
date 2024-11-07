@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: "stukenvitalii"
+      changes:
+        - sqlFile:
+            path: "init.sql"
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: "add_table_roles.sql"
+            relativeToChangelogFile: true
+  - changeSet:
+      id: "2"
+      author: "stukenvitalii"
+      changes:
+        - sqlFile:
+            path: "add_table_users.sql"
+            relativeToChangelogFile: true
+        - sqlFile:
+            path: "add_table_tokens.sql"
+            relativeToChangelogFile: true
