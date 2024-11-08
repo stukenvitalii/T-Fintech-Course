@@ -64,10 +64,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: coverage-report
-        path: build/reports/jacoco/test/html
-
-    - name: List report files
-      run: ls -R build/reports/jacoco/test
+        path: build/reports/jacoco/test
 
     - name: jacoco
       uses: madrapps/jacoco-report@v1.6.1
@@ -107,6 +104,7 @@ jobs:
 
     - name: Build Docker image
       run: |
+        gradle build  # Ensure the JAR file is built
         docker build -t ghcr.io/stukenvitalii/fintech:latest .  # Tag for GitHub Container Registry
 
     - name: Log in to GitHub Container Registry
