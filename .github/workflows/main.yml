@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -33,13 +34,13 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: gradle build
 
     - name: Run tests
-      run: ./gradlew test
+      run: gradle test
 
     - name: Calculate test coverage
-      run: ./gradlew jacocoTestReport
+      run: gradle jacocoTestReport
 
     - name: Upload test coverage report
       uses: actions/upload-artifact@v3
@@ -48,7 +49,7 @@ jobs:
         path: build/reports/jacoco/test/html
 
     - name: Run static code analysis
-      run: ./gradlew check
+      run: gradle check
 
     - name: Build Docker image
       run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
