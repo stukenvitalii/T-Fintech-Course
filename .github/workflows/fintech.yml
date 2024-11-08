@@ -71,7 +71,7 @@ jobs:
       if: ( github.event_name != 'workflow_dispatch' )
       with:
         paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.CR_PAT }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         min-coverage-overall: 75
         min-coverage-changed-files: 30
         title: Code Coverage
