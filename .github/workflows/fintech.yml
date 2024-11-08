@@ -66,4 +66,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image
-      run: docker push ghcr.io/fintech:${{ github.sha }}
+      run: docker push ghcr.io/${{ github.actor }}/fintech:${{ github.sha }}
