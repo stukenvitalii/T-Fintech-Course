@@ -67,6 +67,5 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
-
     - name: Push Docker image to GitHub Container Registry
       run: docker push ghcr.io/stukenvitalii/fintech:latest
