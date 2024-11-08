@@ -1,13 +1,15 @@
 package edu.tbank.hw5.repository;
 
 import edu.tbank.hw5.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class BaseRepository<ID, T> {
-    protected final Storage<ID, T> storage = new Storage<>();
+    protected final Storage<ID, T> storage;
 
     public List<T> findAll() {
         log.info("Fetching all entities");
