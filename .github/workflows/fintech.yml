@@ -40,8 +40,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: ./gradlew build
-
+        run: ./gradlew clean build --refresh-dependencies
 
   # Stage 2: Static Code Analysis
   static_analysis:
