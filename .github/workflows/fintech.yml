@@ -114,11 +114,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Run Coverage
+        run: |
+          chmod +x gradlew
+          ./gradlew jacocoTestReport
+
       - name: Upload Jacoco Coverage Report
         uses: madrapps/jacoco-report@v1.7.1
         if: ( github.event_name != 'workflow_dispatch' )
         with:
-          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/**/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 75
           min-coverage-changed-files: 30
