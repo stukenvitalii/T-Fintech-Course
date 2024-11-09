@@ -80,6 +80,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build --refresh-dependencies
+
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/stukenvitalii/fintech:latest .  # Tag for GitHub Container Registry
