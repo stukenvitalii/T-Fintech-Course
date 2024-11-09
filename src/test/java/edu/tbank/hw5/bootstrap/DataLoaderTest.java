@@ -1,8 +1,8 @@
 package edu.tbank.hw5.bootstrap;
 
 import edu.tbank.hw5.client.KudaGoClient;
-import edu.tbank.hw5.dto.Category;
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Category;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.repository.CategoryRepository;
 import edu.tbank.hw5.repository.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ public class DataLoaderTest {
 
     @Test
     void retrieveLocations_savesFetchedLocations() {
-        List<Location> locations = List.of(new Location("slug1", "Location 1"));
+        List<Location> locations = List.of(new Location(1L,"slug1", "Location 1",null));
         when(kudaGoClient.getAllLocations()).thenReturn(locations);
 
         dataLoader.retrieveLocations();

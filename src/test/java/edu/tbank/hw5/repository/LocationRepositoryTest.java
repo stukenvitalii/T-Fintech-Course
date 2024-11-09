@@ -1,6 +1,6 @@
 package edu.tbank.hw5.repository;
 
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.storage.Storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +32,8 @@ public class LocationRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        location1 = new Location("slug1", "Location 1");
-        location2 = new Location("slug2", "Location 2");
+        location1 = new Location(1L,"slug1", "Location 1",null);
+        location2 = new Location(2L,"slug2", "Location 2",null);
     }
 
     @Test

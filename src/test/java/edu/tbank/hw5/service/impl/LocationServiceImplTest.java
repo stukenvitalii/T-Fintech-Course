@@ -1,6 +1,6 @@
 package edu.tbank.hw5.service.impl;
 
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Location;
 import edu.tbank.hw5.repository.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,8 +26,8 @@ public class LocationServiceImplTest {
     @Test
     public void testFindAll() {
         // Given
-        Location location1 = new Location("slug-1", "Location 1");
-        Location location2 = new Location("slug-2", "Location 2");
+        Location location1 = new Location(1L,"slug-1", "Location 1",null);
+        Location location2 = new Location(1L,"slug-2", "Location 2",null);
         List<Location> locations = Arrays.asList(location1, location2);
 
         when(locationRepository.findAll()).thenReturn(locations);
@@ -43,7 +43,7 @@ public class LocationServiceImplTest {
     @Test
     public void testGetLocationBySlug() {
         // Given
-        Location location = new Location("slug-1", "Location 1");
+        Location location = new Location(1L,"slug-1", "Location 1",null);
         when(locationRepository.findById("slug-1")).thenReturn(location);
 
         // When
@@ -57,7 +57,7 @@ public class LocationServiceImplTest {
     @Test
     public void testAddLocation() {
         // Given
-        Location location = new Location("slug-1", "New Location");
+        Location location = new Location(1L,"slug-1", "New Location",null);
 
         // When
         locationService.addLocation(location);
@@ -69,7 +69,7 @@ public class LocationServiceImplTest {
     @Test
     public void testUpdateLocationBySlug() {
         // Given
-        Location updatedLocation = new Location("slug-1", "Updated Location");
+        Location updatedLocation = new Location(1L,"slug-1", "Updated Location",null);
 
         // When
         locationService.updateLocationById(updatedLocation, "slug-1");

@@ -1,8 +1,8 @@
 package edu.tbank.hw5.client;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import edu.tbank.hw5.dto.Category;
-import edu.tbank.hw5.dto.Location;
+import edu.tbank.hw5.entity.Category;
+import edu.tbank.hw5.entity.Location;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
