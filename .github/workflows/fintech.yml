@@ -118,6 +118,9 @@ jobs:
 
   # Stage 4: Coverage Report
   coverage_report:
+    permissions:
+      packages: write
+      pull-requests: write
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -130,11 +133,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
       - name: Run Coverage
-        run: ./gradlew jacocoTestReport
+        run: |
+          chmod +x gradlew
+          ./gradlew jacocoTestReport
+
+      - name: Check if Jacoco report exists
+        run: |
+          ls -R build/reports/jacoco
 
       - name: Upload Jacoco Coverage Report
         uses: madrapps/jacoco-report@v1.7.1
@@ -146,30 +152,8 @@ jobs:
           title: Code Coverage
           update-comment: true
 
-  post_pr_comment:
-    runs-on: ubuntu-latest
-    needs: coverage_report
-    steps:
-      - name: Get Pull Request associated with push
-        id: pr
-        run: |
-          PR_NUMBER=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.sha }} | \
-            jq '.[0].number')
-          echo "::set-output name=pr_number::$PR_NUMBER"
+      - name: Print full event payload for debugging
+        run: echo "${{ toJson(github.event) }}"
 
-      - name: Comment on Pull Request
-        if: steps.pr.outputs.pr_number != ''
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const prNumber = '${{ steps.pr.outputs.pr_number }}';
-            const comment = 'This is an automated comment from GitHub Actions on your PR';
-            const issueComment = await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: comment
-            });
-            console.log(`Comment created at: ${issueComment.data.html_url}`);
+      - name: Log event type
+        run: echo  "${{ github.event_name }}"
