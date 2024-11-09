@@ -41,13 +41,13 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: gradle build
+        run: ./gradlew build
 
       - name: Run tests
-        run: gradle test
+        run: ./gradlew test
 
       - name: Calculate test coverage
-        run: gradle jacocoTestReport
+        run: ./gradlew jacocoTestReport
 
       - name: Upload test coverage report
         uses: actions/upload-artifact@v3
@@ -74,7 +74,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run static code analysis
-        run: gradle check
+        run: ./gradlew check
 
   # Stage 3: Docker Build and Push
   docker:
