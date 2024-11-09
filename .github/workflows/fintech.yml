@@ -155,6 +155,9 @@ jobs:
       - name: Print full event payload for debugging
         run: echo "${{ toJson(github.event) }}"
 
+      - name: Log event type
+        run: echo  "${{ github.event_name }}"
+
       - name: Add Coverage Comment Manually
         uses: actions/github-script@v6
         with:
