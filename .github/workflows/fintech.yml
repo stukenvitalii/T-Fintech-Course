@@ -156,7 +156,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: comment } = await github.rest.issues.createComment({
-              ...context.issue,
-              body: 'Code coverage report available! [Coverage Report](<link_to_report>)'
-            });
+            const issue = context.payload.pull_request ? context.payload.pull_request.number : null;
+            if (issue) {
+              const { data: comment } = await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issue,
+                body: 'Code coverage report available! [Coverage Report](google.com)'
+              });
+            } else {
+              console.log('No pull request found.');
+            }
