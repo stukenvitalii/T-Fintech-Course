@@ -152,17 +152,20 @@ jobs:
           title: Code Coverage
           update-comment: true
 
+      - name: Print full event payload for debugging
+        run: echo "${{ toJson(github.event) }}"
+
       - name: Add Coverage Comment Manually
         uses: actions/github-script@v6
         with:
           script: |
-            const issue = context.payload.pull_request ? context.payload.pull_request.number : null;
-            if (issue) {
+            if (context.payload.pull_request) {
+              const issue = context.payload.pull_request.number;
               const { data: comment } = await github.rest.issues.createComment({
                 ...context.repo,
                 issue_number: issue,
-                body: 'Code coverage report available! [Coverage Report](google.com)'
+                body: 'Code coverage report available! [Coverage Report](<link_to_report>)'
               });
             } else {
-              console.log('No pull request found.');
+              console.log('No pull request found or the event is not a PR.');
             }
