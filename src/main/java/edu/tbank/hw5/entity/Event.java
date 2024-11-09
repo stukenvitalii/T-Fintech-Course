@@ -24,7 +24,7 @@ public class Event implements Serializable {
     private Long id;
 
     private String title;
-    private String price;
+    private Double price;
 
     @NotNull
     @Column(name = "is_free", nullable = false)
