@@ -1,12 +1,15 @@
 package edu.tbank.hw5.controller;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.tbank.hw5.dto.EventDto;
 import edu.tbank.hw5.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -54,5 +57,13 @@ public class EventController {
     @DeleteMapping
     public void deleteMany(@RequestParam List<Long> ids) {
         eventService.deleteMany(ids);
+    }
+
+    @GetMapping("/specification")
+    public List<EventDto> findAll(@RequestParam(value = "title", required = false) String title,
+                                  @RequestParam(value = "place", required = false) String place,
+                                  @RequestParam(value = "fromDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
+                                  @RequestParam(value = "toDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
+        return eventService.findAllBySpecification(title, place, dateFrom, toDate);
     }
 }
