@@ -2,6 +2,10 @@ name: CI
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - fj_2024_lesson_14
   pull_request:
     branches:
       - main
