@@ -27,6 +27,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Check Java version
+        run: java -version
+
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -104,7 +107,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Upload Jacoco Coverage Report
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: madrapps/jacoco-report@v1.7.1
         if: ( github.event_name != 'workflow_dispatch' )
         with:
           paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
