@@ -1,5 +1,6 @@
 package edu.tbank.hw5.dto.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tbank.hw5.dto.EventDto;
 import edu.tbank.hw5.entity.Event;
 import org.mapstruct.BeanMapping;
@@ -19,4 +20,13 @@ public interface EventMapper {
     Event partialUpdate(EventDto eventDto, @MappingTarget Event event);
 
     Event updateWithNull(EventDto eventDto, @MappingTarget Event event);
+
+    default EventDto fromJsonString(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(json, EventDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to convert JSON to EventDto", e);
+        }
+    }
 }

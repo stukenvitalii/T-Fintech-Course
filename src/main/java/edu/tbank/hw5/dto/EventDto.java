@@ -1,5 +1,6 @@
 package edu.tbank.hw5.dto;
 
+import edu.tbank.hw5.entity.Location;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -10,7 +11,8 @@ import java.time.LocalDate;
 @Value
 public class EventDto {
     String title;
-    String price;
+    Double price;
     boolean isFree;
     LocalDate date;
+    Location place;
 }
