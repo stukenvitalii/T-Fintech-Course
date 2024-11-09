@@ -14,21 +14,20 @@ on:
       - .github/workflows/fintech.yml
 
 jobs:
-  # Stage 1: Build and Test
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Check Java version
-        run: java -version
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
@@ -43,17 +42,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Run tests
-        run: ./gradlew test
-
-      - name: Calculate test coverage
-        run: ./gradlew jacocoTestReport
-
-      - name: Upload test coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: build/reports/jacoco/test
 
   # Stage 2: Static Code Analysis
   static_analysis:
