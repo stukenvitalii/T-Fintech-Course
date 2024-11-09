@@ -7,11 +7,13 @@ import edu.tbank.hw5.dto.mapper.EventMapper;
 import edu.tbank.hw5.entity.Event;
 import edu.tbank.hw5.repository.jpa.EventRepositoryJpa;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -89,5 +91,13 @@ public class EventService{
 
     public void deleteMany(List<Long> ids) {
         eventRepositoryJpa.deleteAllById(ids);
+    }
+
+    public List<EventDto> findAllBySpecification(String title, String place, LocalDate dateFrom, LocalDate toDate) {
+        Specification<Event> specification = EventRepositoryJpa.buildSpecification(title, place, dateFrom, toDate);
+        List<Event> events = eventRepositoryJpa.findAll(specification);
+        return events.stream()
+                .map(eventMapper::toDto)
+                .toList();
     }
 }
